@@ -1,0 +1,95 @@
+# =============================================================================
+# deploy.yml
+# Builds and deploys the React viewer to GitHub Pages on push to main.
+#
+# WORKFLOW STRATEGY: Fork + Upstream
+# ──────────────────────────────────
+# upstream: rickylobu/pdf-to-llm-context  (infrastructure template)
+# instance: rickylobu/primer-curso-contabilidad  (your book fork)
+#
+# This workflow runs in BOTH repos:
+#   - upstream: deploys a demo viewer shell
+#   - instance: deploys your real digitized book
+#
+# To contribute infrastructure improvements back to upstream:
+#   1. git checkout -b feat/your-improvement
+#   2. git add extractor/ viewer/ README.md
+#   3. git commit && git push origin feat/your-improvement
+#   4. Open PR: your-fork:feat/... -> upstream:main
+# =============================================================================
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'viewer/**'
+      - 'output/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build viewer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: viewer/package.json
+
+      - name: Install dependencies
+        working-directory: viewer
+        run: npm ci
+
+      - name: Build
+        working-directory: viewer
+        env:
+          # Set in: Settings -> Secrets -> Actions -> VITE_BASE_PATH
+          # Value: /your-repository-name/  (with both slashes)
+          VITE_BASE_PATH: ${{ secrets.VITE_BASE_PATH || '/' }}
+        run: npm run build
+
+      - name: Copy extracted pages to dist
+        run: |
+          mkdir -p viewer/dist/pages
+          if [ -d "output/pages" ] && [ "$(ls -A output/pages 2>/dev/null)" ]; then
+            cp output/pages/*.md viewer/dist/pages/ 2>/dev/null || true
+          fi
+          [ -f "output/index.json" ] && cp output/index.json viewer/dist/
+          [ -f "output/theme.json" ] && cp output/theme.json viewer/dist/
+          [ -f "output/cover.png"  ] && cp output/cover.png  viewer/dist/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: viewer/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,63 @@
+# ============================================================
+# pdf-to-llm-context — Configuration File
+# Edit ONLY this file before running the extractor.
+# ============================================================
+
+# ----------------------------------------------------------
+# INPUT
+# ----------------------------------------------------------
+
+# input:
+#   # Filename of your PDF inside the /input/ folder.
+#   pdf_filename: "my_book.pdf"
+
+#   # Book metadata (used for copyright footer and index.json)
+#   title: "Book Title"
+#   author: "Author Name"
+#   year: 2024
+#   isbn: ""                          # optional
+#   original_url: ""                  # optional — URL of the original source
+
+# ----------------------------------------------------------
+# AI PROCESSING
+# ----------------------------------------------------------
+ai:
+  # FREE TIER recommendation: "gemini-2.0-flash-lite" (1,000 RPD)
+  # gemini-2.5-flash = only 20 RPD on free tier (not suitable for books)
+  # To change model: edit ONLY this line — gemini_client.py handles routing.
+  ocr_model: "gemini-3.1-flash-lite-preview"
+
+  # Optional: Claude enrichment pass (requires ANTHROPIC_API_KEY in .env)
+  enable_claude_enrichment: false
+  claude_model: "claude-sonnet-4-20250514"
+
+  # Optional: Wolfram Alpha math validation (requires WOLFRAM_APP_ID in .env)
+  enable_wolfram_math: false
+
+# ----------------------------------------------------------
+# PROCESSING
+# ----------------------------------------------------------
+processing:
+  dpi: 300                  # 200=fast | 300=balanced | 400=quality
+  page_range: null          # null=all pages, or [start, end] e.g. [1, 50]
+  rate_limit_delay: 4.5     # seconds between API calls (min 4.0 for free tier)
+  max_retries: 3
+  skip_existing: true       # resume support — skip already-processed pages
+
+# ----------------------------------------------------------
+# OUTPUT
+# ----------------------------------------------------------
+output:
+  pages_dir: "output/pages"
+  sync_to_viewer: true
+  viewer_public_dir: "viewer/public/pages"
+
+# ----------------------------------------------------------
+# VIEWER THEME (auto-detected from cover — override here if needed)
+# ----------------------------------------------------------
+theme:
+  primary_color: ""
+  secondary_color: ""
+  accent_color: ""
+  background_color: ""
+  text_color: ""

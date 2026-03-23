@@ -1,0 +1,39 @@
+# ============================================================
+# .gitignore
+# ============================================================
+
+# API keys -- NEVER commit
+.env
+
+# Input PDF -- may be copyrighted
+input/*.pdf
+input/*.PDF
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Extraction state (local only)
+output/.extraction_state.json
+output/.extraction_state.tmp
+
+# Node / React
+node_modules/
+viewer/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
