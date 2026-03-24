@@ -1,0 +1,18 @@
+{
+  "primary_color": "#874747",
+  "secondary_color": "#290f16",
+  "accent_color": "#0a0107",
+  "background_color": "#f7f6f7",
+  "text_color": "#1a1a1a",
+  "palette": [
+    "#874747",
+    "#290f16",
+    "#0a0107",
+    "#060109",
+    "#060005",
+    "#020107",
+    "#d8d6da",
+    "#f7f6f7"
+  ],
+  "source": "auto-extracted from cover"
+}
